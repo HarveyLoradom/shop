@@ -60,13 +60,8 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      HmMoreList(recommendList: _recommendList)
+      HmMoreList(recommendList: _recommendList),
     ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(slivers: _getScrollChildren());
   }
 
   @override
@@ -78,6 +73,15 @@ class _HomeViewState extends State<HomeView> {
     _getInVogueList();
     _getOneStopList();
     _getRecommendList();
+    _registerEvent();
+  }
+
+  void _registerEvent() {
+    _controller.addListener(() {
+      if (_controller.position.pixels >= _controller.position.maxScrollExtent) {
+        _getRecommendList();
+      }
+    });
   }
 
   void _getInVogueList() async {
@@ -90,9 +94,22 @@ class _HomeViewState extends State<HomeView> {
     setState(() {});
   }
 
+  int _page = 1;
+  bool _isLoading = false;
+  bool _hasMore = true;
   void _getRecommendList() async {
-    _recommendList = await getRecommendListAPI({"limit": 10});
+    if (_isLoading || !_hasMore) {
+      return;
+    }
+    _isLoading = true;
+    int requestLimit=_page*8;
+    _recommendList = await getRecommendListAPI({"limit": requestLimit});
+    _isLoading = false;
     setState(() {});
+    if(_recommendList.length < requestLimit){
+      _hasMore = false;
+    }
+    _page++;
   }
 
   void _getBannerList() async {
@@ -108,5 +125,14 @@ class _HomeViewState extends State<HomeView> {
   void _getCategoryList() async {
     _categoryList = await getCategoryListApi();
     setState(() {});
+  }
+
+  final ScrollController _controller = ScrollController();
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      controller: _controller,
+      slivers: _getScrollChildren(),
+    );
   }
 }
