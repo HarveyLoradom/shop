@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop/api/home.dart';
 import 'package:shop/components/Home/HmCategory.dart';
 import 'package:shop/components/Home/HmHot.dart';
 import 'package:shop/components/Home/HmMoreList.dart';
@@ -15,11 +16,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
 
-  List<BannerItem> _bannerList=[
-    BannerItem(id: "1", imgUrl: "https://picsum.photos/id/1047/1000/400"),
-    BannerItem(id: "2", imgUrl: "https://picsum.photos/id/1076/1000/400"),
-    BannerItem(id: "3", imgUrl: "https://picsum.photos/id/1081/1000/400"),
-  ];
+  List<BannerItem> _bannerList=[];
 
   List<Widget> _getScrollChildren(){
     return [
@@ -52,5 +49,16 @@ class _HomeViewState extends State<HomeView> {
     return CustomScrollView(slivers: _getScrollChildren(),);
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _getBannerList();
+  }
 
+  void _getBannerList() async{
+    _bannerList=await getBannerListApi();
+    setState(() {
+      
+    });
+  }
 }
