@@ -18,6 +18,11 @@ class _HomeViewState extends State<HomeView> {
 
   List<BannerItem> _bannerList=[];
   List<CategoryItem> _categoryList=[];
+  SpecialRecommendItem _productList=SpecialRecommendItem(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
 
   List<Widget> _getScrollChildren(){
     return [
@@ -25,7 +30,7 @@ class _HomeViewState extends State<HomeView> {
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(child: HmCategory(categoryList: _categoryList,)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
-      SliverToBoxAdapter(child: HmSuggestion()),
+      SliverToBoxAdapter(child: HmSuggestion(productList: _productList,)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(
         child: 
@@ -55,12 +60,19 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     _getBannerList();
     _getCategoryList();
+    _getProductList();
   }
 
   void _getBannerList() async{
     _bannerList=await getBannerListApi();
     setState(() {
       
+    });
+  }
+  
+  void _getProductList() async{
+    _productList=await getProductListApi();
+    setState(() {
     });
   }
 
