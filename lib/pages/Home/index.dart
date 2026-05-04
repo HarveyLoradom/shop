@@ -4,6 +4,7 @@ import 'package:shop/components/Home/HmHot.dart';
 import 'package:shop/components/Home/HmMoreList.dart';
 import 'package:shop/components/Home/HmSlider.dart';
 import 'package:shop/components/Home/HmSuggestion.dart';
+import 'package:shop/viewmodels/home.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({Key? key}) : super(key: key);
@@ -13,9 +14,16 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+
+  List<BannerItem> _bannerList=[
+    BannerItem(id: "1", imgUrl: "https://picsum.photos/id/1047/1000/400"),
+    BannerItem(id: "2", imgUrl: "https://picsum.photos/id/1076/1000/400"),
+    BannerItem(id: "3", imgUrl: "https://picsum.photos/id/1081/1000/400"),
+  ];
+
   List<Widget> _getScrollChildren(){
     return [
-      SliverToBoxAdapter(child: HmSlider()),
+      SliverToBoxAdapter(child: HmSlider(bannerList: _bannerList,)),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
       SliverToBoxAdapter(child: HmCategory()),
       SliverToBoxAdapter(child: SizedBox(height: 10)),
