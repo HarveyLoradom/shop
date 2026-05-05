@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shop/api/login.dart';
 import 'package:shop/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -64,6 +66,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // 登录方法
+  Future<void> _login() async {
+    try {
+      final res = await loginApi({
+        "account": _phoneController.text,
+        "password": _codeController.text,
+      });
+      
+      ToastUtils.showToast(context, "登录成功");
+      // 登录成功后，跳转到首页
+      Navigator.pop(context);
+    } catch (e) {
+      ToastUtils.showToast(context, (e as DioException).message ?? "");
+    }
+    
+  }
+
   // 登录按钮Widget
   Widget _buildLoginButton() {
     return SizedBox(
@@ -74,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
           // 登录逻辑
           if (_key.currentState!.validate() == true) {
             if(_isChecked){
-              // 登录成功
+              _login();
             }else{
               ToastUtils.showToast(context,"请勾选协议和隐私");
             }

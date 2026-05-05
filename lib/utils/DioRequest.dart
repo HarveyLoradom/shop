@@ -27,7 +27,7 @@ class Diorequest {
           handle.reject(DioException(requestOptions: response.requestOptions));
         },
         onError: (error, handle) {
-          handle.reject(error);
+          handle.reject(DioException(requestOptions: error.requestOptions, message: error.response?.data?["msg"]));
         },
       ),
     );
@@ -37,6 +37,10 @@ class Diorequest {
     return _handleResponse(_dio.get(url, queryParameters: params));
   }
 
+  Future<dynamic> post(String url, {Map<String, dynamic>? data}) {
+    return _handleResponse(_dio.post(url, data: data));
+  }
+
   Future<dynamic> _handleResponse(Future<Response<dynamic>> task) async {
     try {
       Response<dynamic> res = await task;
@@ -44,9 +48,9 @@ class Diorequest {
       if (data["code"] == GlobalConstants.SUCCESS_CODE) {
         return data["result"];
       }
-      throw Exception(data["msg"] ?? "加载数据异常");
+      throw DioException(requestOptions: res.requestOptions, message: data["msg"] ?? "加载数据失败");
     } catch (e) {
-      throw Exception(e);
+      rethrow;
     }
   }
 }
