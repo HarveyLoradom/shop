@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/viewmodels/home.dart';
- 
+
 class HmHot extends StatefulWidget {
   // 热榜推荐
   final SpecialRecommendItem result;
@@ -8,11 +8,11 @@ class HmHot extends StatefulWidget {
   final String type;
   // 一站式推荐
   HmHot({Key? key, required this.result, required this.type}) : super(key: key);
- 
+
   @override
   _HmHotState createState() => _HmHotState();
 }
- 
+
 class _HmHotState extends State<HmHot> {
   // 获取前两条数据
   List<GoodsItem> get _items {
@@ -21,45 +21,49 @@ class _HmHotState extends State<HmHot> {
     }
     return widget.result.subTypes.first.goodsItems.items.take(2).toList();
   }
- 
+
   // 构建子项
   List<Widget> _getChildrenList() {
     return _items.map((item) {
-      return Container(
-        width: 80,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                item.picture,
-                width: 80,
-                height: 100,
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.asset(
-                    "lib/assets/home_cmd_inner.png",
-                    width: 80,
-                    height: 100,
-                  );
-                },
+      return Expanded(
+        child: Container(
+          //width: 80,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  item.picture,
+                  fit: BoxFit.cover,
+                  //width: 80,
+                  height: 100,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      "lib/assets/home_cmd_inner.png",
+                      //width: 80,
+                      fit: BoxFit.cover,
+                      height: 100,
+                    );
+                  },
+                ),
               ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              "¥${item.price}",
-              style: TextStyle(
-                fontSize: 12,
-                color: const Color.fromARGB(255, 86, 24, 20),
+              SizedBox(height: 5),
+              Text(
+                "¥${item.price}",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: const Color.fromARGB(255, 86, 24, 20),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }).toList();
   }
- 
+
   Widget _buildHeader() {
     return Row(
       children: [
@@ -82,7 +86,7 @@ class _HmHotState extends State<HmHot> {
       ],
     );
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Padding(
