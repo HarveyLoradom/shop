@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shop/api/mine.dart';
 import 'package:shop/components/Home/HmMoreList.dart';
 import 'package:shop/components/Mine/HmGuess.dart';
+import 'package:shop/stores/UserController.dart';
 import 'package:shop/viewmodels/home.dart';
- 
+
 class MineView extends StatefulWidget {
   MineView({Key? key}) : super(key: key);
- 
+
   @override
   _MineViewState createState() => _MineViewState();
 }
- 
+
 class _MineViewState extends State<MineView> {
+  final UserController _userController = Get.put(UserController());
+  
   Widget _buildHeader() {
     return Container(
       decoration: BoxDecoration(
@@ -24,25 +28,38 @@ class _MineViewState extends State<MineView> {
       padding: const EdgeInsets.only(left: 20, right: 40, top: 80, bottom: 20),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 26,
-            backgroundImage: const AssetImage('lib/assets/goods_avatar.png'),
-            backgroundColor: Colors.white,
-          ),
+          Obx(() {
+            return CircleAvatar(
+              radius: 26,
+              backgroundImage: _userController.user.value.avatar.isNotEmpty
+                  ? NetworkImage(_userController.user.value.avatar)
+                  : const AssetImage('lib/assets/goods_avatar.png'),
+              backgroundColor: Colors.white,
+            );
+          }),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children:  [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                  child: Text(
-                    '立即登录',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ),
+              children: [
+                Obx(() {
+                  return GestureDetector(
+                    onTap: () {
+                      if (_userController.user.value.id.isEmpty) {
+                        Navigator.pushNamed(context, '/login');
+                      }
+                    },
+                    child: Text(
+                      _userController.user.value.id.isNotEmpty
+                          ? _userController.user.value.account
+                          : '立即登录',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -50,7 +67,7 @@ class _MineViewState extends State<MineView> {
       ),
     );
   }
- 
+
   Widget _buildVipCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -93,7 +110,7 @@ class _MineViewState extends State<MineView> {
       ),
     );
   }
- 
+
   Widget _buildQuickActions() {
     Widget item(String pic, String label) {
       return Column(
@@ -105,7 +122,7 @@ class _MineViewState extends State<MineView> {
         ],
       );
     }
- 
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Container(
@@ -125,7 +142,7 @@ class _MineViewState extends State<MineView> {
       ),
     );
   }
- 
+
   Widget _buildOrderModule() {
     Widget orderItem(String pic, String label) {
       return Column(
@@ -140,7 +157,7 @@ class _MineViewState extends State<MineView> {
         ],
       );
     }
- 
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Card(
@@ -151,7 +168,7 @@ class _MineViewState extends State<MineView> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
- 
+
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,13 +196,8 @@ class _MineViewState extends State<MineView> {
   }
 
   List<GoodDetailItem> _list = [];
-  Map<String,dynamic> _params={
-    "page": 1,
-    "pageSie":10
-  };
+  Map<String, dynamic> _params = {"page": 1, "pageSie": 10};
 
-  
-  
   @override
   void initState() {
     super.initState();
@@ -201,20 +213,20 @@ class _MineViewState extends State<MineView> {
     });
   }
 
-  bool _isLoading=false;
-  bool _hasMore=true;
+  bool _isLoading = false;
+  bool _hasMore = true;
   final ScrollController _controller = ScrollController();
   Future<void> _getGuessList() async {
     if (_isLoading || !_hasMore) {
       return;
     }
-    _isLoading=true;
-    final res=await getGuessListApi(_params);
-    _isLoading=false;
+    _isLoading = true;
+    final res = await getGuessListApi(_params);
+    _isLoading = false;
     _list.addAll(res.items);
     setState(() {});
-    if(_params["page"]>=res.pages){
-      _hasMore=false;
+    if (_params["page"] >= res.pages) {
+      _hasMore = false;
       return;
     }
     _params["page"]++;
@@ -229,9 +241,9 @@ class _MineViewState extends State<MineView> {
         SliverToBoxAdapter(child: _buildVipCard()),
         SliverToBoxAdapter(child: _buildQuickActions()),
         SliverToBoxAdapter(child: _buildOrderModule()),
-        SliverPersistentHeader(delegate: HmGuess(),pinned: true,),
+        SliverPersistentHeader(delegate: HmGuess(), pinned: true),
         // 猜你喜欢
-        HmMoreList(recommendList: _list,),
+        HmMoreList(recommendList: _list),
       ],
     );
   }
