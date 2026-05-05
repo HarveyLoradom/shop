@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:shop/api/login.dart';
 import 'package:shop/stores/TokenManager.dart';
 import 'package:shop/stores/UserController.dart';
+import 'package:shop/utils/LoadingDialog.dart';
 import 'package:shop/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -72,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // 登录方法
   Future<void> _login() async {
+    LoadingDialog.show(context);
     try {
       final res = await loginApi({
         "account": _phoneController.text,
@@ -81,10 +83,12 @@ class _LoginPageState extends State<LoginPage> {
       _userController.updateUserInfo(res);
       // 登录成功后，保存token
       tokenManager.setToken(res.token);
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, "登录成功");
       // 登录成功后，跳转到首页
       Navigator.pop(context);
     } catch (e) {
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, (e as DioException).message ?? "");
     }
     
